@@ -1,3 +1,10 @@
+Alunos: Mateus Gazzola e Patrícia De Bona 
+
+
+
+
+
+
 - Executar o comando `composer install` para instalar as dependências do projeto.
 
 - Copiar `.env.example` para `.env`

@@ -4,8 +4,10 @@ use App\Controllers\Admin\AdminController;
 use App\Controllers\Admin\CategoryController;
 use App\Controllers\Admin\ProductController;
 use App\Controllers\Admin\UserController;
+use App\Controllers\Admin\FormaPagamentoController;
 use App\Controllers\AuthController;
 use App\Controllers\SiteController;
+
 use App\Middleware\AuthMiddleware;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -61,6 +63,17 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $rou
 //            $users->addRoute('POST', '/update', [UserController::class, 'update']);
             $users->addRoute('POST', '/delete', [UserController::class, 'delete']);
         });
+
+        //Forma de Pagamento
+        $group->addGroup('/formaPagamento', function (FastRoute\RouteCollector $formaPagamento) {
+            $formaPagamento->addRoute('GET', '', [FormaPagamentoController::class, 'index']);
+            $formaPagamento->addRoute('GET', '/create', [FormaPagamentoController::class, 'create']);
+            $formaPagamento->addRoute('POST', '/store', [FormaPagamentoController::class, 'store']);
+            $formaPagamento->addRoute('GET', '/show', [FormaPagamentoController::class, 'show']);
+            $formaPagamento->addRoute('POST', '/delete', [FormaPagamentoController::class, 'delete']);
+            $formaPagamento->addRoute('POST', '/update', [FormaPagamentoController::class, 'update']);
+        });
+
     });
 });
 

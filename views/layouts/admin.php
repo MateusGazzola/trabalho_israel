@@ -192,6 +192,10 @@ $auth = AuthService::user();
                 <i class="bi bi-box-seam"></i>
                 <span>Categorias</span>
             </a>
+            <a class="nav-link" href="/admin/formaPagamento" data-page="formapagamento">
+                <i class="bi bi-box-seam"></i>
+                <span>Forma de pagamento</span>
+            </a>
         </nav>
     </aside>
 

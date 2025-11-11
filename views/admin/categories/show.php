@@ -22,7 +22,7 @@
                            value="<?= $this->e($category['text']) ?>" readonly>
                 </div>
                 <div class="text-end">
-                    <a href="javascript:history.back()" class="btn btn-secondary">Voltar</a>
+                    <a href="/admin/categories" class="btn btn-secondary">Voltar</a>
                 </div>
             </form>
         </div>

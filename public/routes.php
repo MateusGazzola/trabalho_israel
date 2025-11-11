@@ -72,6 +72,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $rou
             $formaPagamento->addRoute('GET', '/show', [FormaPagamentoController::class, 'show']);
             $formaPagamento->addRoute('POST', '/delete', [FormaPagamentoController::class, 'delete']);
             $formaPagamento->addRoute('POST', '/update', [FormaPagamentoController::class, 'update']);
+            $formaPagamento->addRoute('GET', '/edit', [FormaPagamentoController::class, 'edit']);
         });
 
     });

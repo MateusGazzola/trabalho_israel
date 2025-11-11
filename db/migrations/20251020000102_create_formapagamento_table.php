@@ -9,6 +9,8 @@ final class CreateFormaPagamentoTable extends AbstractMigration
     {
         $this->table('formapagamento')
             ->addColumn('descricao', 'string', ['limit' => 100])
+            ->addColumn('tipo_pagamento', 'string', ['limit' => 50, 'null' => true])
             ->create();
+            
     }
 }

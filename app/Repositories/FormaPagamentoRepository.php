@@ -1,71 +1,65 @@
 <?php
+
 namespace App\Repositories;
 
 use App\Core\Database;
-use App\Models\FormaPagamento;
 use PDO;
 
-class FormaPagamentoRepository 
-{
+class FormaPagamentoRepository {
+    private PDO $db;
+
+    public function __construct()
+    {
+        $this->db = Database::getConnection();
+    }
+
     public function countAll(): int
     {
-        $stmt = Database::getConnection()->query("SELECT COUNT(*) FROM formapagamento");
+        $stmt = $this->db->query("SELECT COUNT(*) FROM formas_pagamento");
         return (int)$stmt->fetchColumn();
     }
-    
+
     public function paginate(int $page, int $perPage): array
     {
         $offset = ($page - 1) * $perPage;
-        $stmt = Database::getConnection()->prepare("SELECT * FROM formapagamento ORDER BY id DESC LIMIT :limit OFFSET :offset");
-        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+        $stmt = $this->db->prepare("SELECT * FROM formas_pagamento LIMIT :offset, :perPage");
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->bindValue(':perPage', $perPage, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function find(int $id): ?array
     {
-        $stmt = Database::getConnection()->prepare("SELECT * FROM formapagamento WHERE id = ?");
-        $stmt->execute([$id]);
-        $row = $stmt->fetch();
-        return $row ?: null;
+        $stmt = $this->db->prepare("SELECT * FROM formas_pagamento WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $data ?: null;
     }
 
-    public function create(FormaPagamento $formaPagamento): int
+    public function create(array $data): int
     {
-        $stmt = Database::getConnection()->prepare("INSERT INTO formapagamento (descricao) VALUES (?)");
-        $stmt->execute([$formaPagamento->descricao]);
-        return (int)Database::getConnection()->lastInsertId();
-    }
-/*
-    public function update(Category $category): bool
-    {
-        $stmt = Database::getConnection()->prepare("UPDATE categories SET name = ?, text = ? WHERE id = ?");
-        return $stmt->execute([$category->name, $category->text, $category->id]);
-    }
-*/
-    public function delete(int $id): bool
-    {
-        $stmt = Database::getConnection()->prepare("DELETE FROM formapagamento WHERE id = ?");
-        return $stmt->execute([$id]);
-    }
-/*
-    public function findAll(): array
-    {
-        $stmt = Database::getConnection()->prepare("SELECT * FROM categories ORDER BY id DESC");
-        $stmt->execute();
-        return $stmt->fetchAll();
+        $stmt = $this->db->prepare("INSERT INTO formas_pagamento (descricao, tipo_pagamento) VALUES (:descricao, :tipo_pagamento)");
+        $stmt->execute([
+            'descricao' => $data['descricao'],
+            'tipo_pagamento' => $data['tipo_pagamento']
+        ]);
+        return (int)$this->db->lastInsertId();
     }
 
-    public function getArray(): array
+    public function update(int $id, array $data): bool
     {
-        $stmt = Database::getConnection()->prepare("SELECT * FROM categories ORDER BY id DESC");
-        $stmt->execute();
-        $categories = $stmt->fetchAll();
-        $return = [];
-        foreach ($categories as $category) {
-            $return[$category['id']] = $category['name'];
-        }
-        return $return;
-    } */
+        $stmt = $this->db->prepare("UPDATE formas_pagamento SET descricao = :descricao, tipo_pagamento = :tipo_pagamento WHERE id = :id");
+        return $stmt->execute([
+            'descricao' => $data['descricao'],
+            'tipo_pagamento' => $data['tipo_pagamento'],
+            'id' => $id
+        ]);
+    }
+
+    public function delete(int $id): void
+    {
+        $stmt = $this->db->prepare("DELETE FROM formas_pagamento WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+    }
 }

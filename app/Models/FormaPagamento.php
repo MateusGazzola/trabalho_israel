@@ -13,3 +13,11 @@ class FormaPagamento
         $this->descricao = $descricao;
     }
 }
+
+namespace App\Models;
+
+class FormaPagamento {
+    public ?int $id = null;
+    public string $descricao;
+    public string $tipo_pagamento;
+}

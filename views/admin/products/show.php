@@ -34,7 +34,8 @@
                            readonly>
                 </div>
                 <div class="text-end">
-                    <a href="javascript:history.back()" class="btn btn-secondary">Voltar</a>
+                    <a href="/admin/products" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Voltar
+                </a>
                 </div>
             </form>
         </div>

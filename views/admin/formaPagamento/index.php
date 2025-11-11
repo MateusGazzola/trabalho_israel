@@ -8,51 +8,53 @@
             <i class="bi bi-plus-lg"></i> Nova forma de pagamento
         </a>
     </div>
+
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover mb-0">
                 <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>Descricao</th>
-                    <th>Ações</th>
-                </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Descrição</th>
+                        <th>Tipo de Pagamento</th>
+                        <th>Ações</th>
+                    </tr>
                 </thead>
                 <tbody id="tableBody">
-                <?php foreach ($formasPagamento as $formaPagamento): ?>
-                    <tr>
-                        <td><?= $this->e($formaPagamento['id']) ?></td>
-                        <td><?= $this->e($formaPagamento['descricao']) ?></td>
-                        <td>
-                            <div class="action-buttons">
-                                <a class="btn btn-sm btn-secondary btn-edit"
-                                   href="/admin/formaPagamento/show?id=<?= $this->e($formaPagamento['id']) ?>">
-                                    <i class="bi bi-eye"></i> Ver
-                                </a>
-                                <a class="btn btn-sm btn-primary btn-edit"
-                                   href="/admin/formaPagamento/update?id=<?= $this->e($formaPagamento['id']) ?>">
-                                    <i class="bi bi-pencil"></i> Editar
-                                </a>
-                                <form class="inline" action="/admin/formaPagamento/delete" method="post"
-                                      onsubmit="return confirm('Tem certeza que deseja excluir esta categoria? (<?= $this->e($formaPagamento['descricao']) ?>)');">
-                                    <input type="hidden" name="id" value="<?= $this->e($formaPagamento['id']) ?>">
-                                    <?= \App\Core\Csrf::input() ?>
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <i class="bi bi-trash"></i>
-                                        Excluir
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
+                    <?php foreach ($formasPagamento as $formaPagamento): ?>
+                        <tr>
+                            <td><?= $this->e($formaPagamento['id']) ?></td>
+                            <td><?= $this->e($formaPagamento['descricao']) ?></td>
+                            <td><?= $this->e($formaPagamento['tipo_pagamento'] ?? '-') ?></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a class="btn btn-sm btn-secondary"
+                                       href="/admin/formaPagamento/show?id=<?= $this->e($formaPagamento['id']) ?>">
+                                        <i class="bi bi-eye"></i> Ver
+                                    </a>
+                                    <a class="btn btn-sm btn-primary"
+                                       href="/admin/formaPagamento/edit?id=<?= $this->e($formaPagamento['id']) ?>">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </a>
+                                    <form class="inline d-inline" action="/admin/formaPagamento/delete" method="post"
+                                          onsubmit="return confirm('Tem certeza que deseja excluir esta forma de pagamento? (<?= $this->e($formaPagamento['descricao']) ?>)');">
+                                        <input type="hidden" name="id" value="<?= $this->e($formaPagamento['id']) ?>">
+                                        <?= \App\Core\Csrf::input() ?>
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Excluir
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-<div class="pagination" style="margin-top:12px;">
+<div class="pagination mt-3">
     <?php for ($i = 1; $i <= $pages; $i++): ?>
         <?php if ($i == $page): ?>
             <strong>[<?= $i ?>]</strong>

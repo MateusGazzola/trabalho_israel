@@ -14,13 +14,17 @@ class UserService
         $password = trim($data['password'] ?? '');
 
         if ($name === '') $errors['name'] = 'Nome é obrigatório';
-        if ($email === '') $errors['email'] = 'E-mail é obrigatório';
+        if ($email === '') {
+            $errors['email'] = 'E-mail é obrigatório';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'E-mail inválido';
+        }
         if ($password === '') $errors['password'] = 'Senha é obrigatória';
 
         return $errors;
     }
 
-    public function make(array $data,): User {
+    public function make(array $data): User {
         $name = trim($data['name'] ?? '');
         $email = trim($data['email'] ?? '');
         $password_hash = trim($data['password'] ?? '');

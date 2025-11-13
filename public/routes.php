@@ -5,6 +5,8 @@ use App\Controllers\Admin\CategoryController;
 use App\Controllers\Admin\ProductController;
 use App\Controllers\Admin\UserController;
 use App\Controllers\Admin\FormaPagamentoController;
+use App\Controllers\Admin\PedidoController;
+use App\Controllers\Admin\ClienteController;
 use App\Controllers\AuthController;
 use App\Controllers\SiteController;
 
@@ -73,6 +75,28 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $rou
             $formaPagamento->addRoute('POST', '/delete', [FormaPagamentoController::class, 'delete']);
             $formaPagamento->addRoute('POST', '/update', [FormaPagamentoController::class, 'update']);
             $formaPagamento->addRoute('GET', '/edit', [FormaPagamentoController::class, 'edit']);
+        });
+
+        // Clientes
+        $group->addGroup('/clientes', function (FastRoute\RouteCollector $clientes) {
+            $clientes->addRoute('GET', '', [ClienteController::class, 'index']);
+            $clientes->addRoute('GET', '/create', [ClienteController::class, 'create']);
+            $clientes->addRoute('POST', '/store', [ClienteController::class, 'store']);
+            $clientes->addRoute('GET', '/show', [ClienteController::class, 'show']);
+            $clientes->addRoute('GET', '/edit', [ClienteController::class, 'edit']);
+            $clientes->addRoute('POST', '/update', [ClienteController::class, 'update']);
+            $clientes->addRoute('POST', '/delete', [ClienteController::class, 'delete']);
+        });
+
+        // Pedidos
+        $group->addGroup('/pedidos', function (FastRoute\RouteCollector $pedidos) {
+            $pedidos->addRoute('GET', '', [PedidoController::class, 'index']);
+            $pedidos->addRoute('GET', '/create', [PedidoController::class, 'create']);
+            $pedidos->addRoute('POST', '/store', [PedidoController::class, 'store']);
+            $pedidos->addRoute('GET', '/show', [PedidoController::class, 'show']);
+            $pedidos->addRoute('GET', '/edit', [PedidoController::class, 'edit']);
+            $pedidos->addRoute('POST', '/update', [PedidoController::class, 'update']);
+            $pedidos->addRoute('POST', '/delete', [PedidoController::class, 'delete']);
         });
 
     });

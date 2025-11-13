@@ -22,9 +22,9 @@ class FormaPagamentoRepository {
     public function paginate(int $page, int $perPage): array
     {
         $offset = ($page - 1) * $perPage;
-        $stmt = $this->db->prepare("SELECT * FROM formas_pagamento LIMIT :offset, :perPage");
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt = $this->db->prepare("SELECT * FROM formas_pagamento ORDER BY id DESC LIMIT :perPage OFFSET :offset");
         $stmt->bindValue(':perPage', $perPage, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -61,5 +61,11 @@ class FormaPagamentoRepository {
     {
         $stmt = $this->db->prepare("DELETE FROM formas_pagamento WHERE id = :id");
         $stmt->execute(['id' => $id]);
+    }
+
+    public function findAll(): array
+    {
+        $stmt = $this->db->query("SELECT * FROM formas_pagamento ORDER BY descricao ASC");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

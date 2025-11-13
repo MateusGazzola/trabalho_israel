@@ -33,8 +33,8 @@ class ProductService {
         if (!$file) return null;
         $ext = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
         $name = bin2hex(random_bytes(8)) . '.' . $ext;
-        $dest = dirname(__DIR__, 2) . '/public/uploads/' . $name;
-        $file->move(dirname($dest), $name);
+        $destDir = dirname(__DIR__, 2) . '/public/uploads';
+        $file->move($destDir, $name);
         return '/uploads/' . $name;
     }
 

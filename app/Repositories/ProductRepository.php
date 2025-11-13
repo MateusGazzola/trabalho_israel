@@ -16,12 +16,12 @@ class ProductRepository {
         $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     public function find(int $id): ?array {
         $stmt = Database::getConnection()->prepare("SELECT * FROM products WHERE id = ?");
         $stmt->execute([$id]);
-        $row = $stmt->fetch();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ?: null;
     }
     public function create(Product $p): int {
@@ -37,10 +37,14 @@ class ProductRepository {
         $stmt = Database::getConnection()->prepare("DELETE FROM products WHERE id = ?");
         return $stmt->execute([$id]);
     }
-    public function findByCategoryId(int $id): ?array {
+    public function findByCategoryId(int $id): array {
         $stmt = Database::getConnection()->prepare("SELECT * FROM products WHERE category_id = ?");
         $stmt->execute([$id]);
-        $row = $stmt->fetch();
-        return $row ?: [];
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function findAll(): array {
+        $stmt = Database::getConnection()->query("SELECT * FROM products ORDER BY name ASC");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

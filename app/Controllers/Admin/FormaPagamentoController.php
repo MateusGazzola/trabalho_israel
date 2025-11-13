@@ -73,7 +73,7 @@ class FormaPagamentoController {
         $id = (int)$request->query->get('id', 0);
         $formaPagamento = $this->repo->find($id);
         if (!$formaPagamento) return new Response('Forma de pagamento não encontrada', 404);
-        $html = $this->view->render('admin/FormaPagamento/show', ['formaPagamento' => $formaPagamento]);
+        $html = $this->view->render('admin/formaPagamento/show', ['formaPagamento' => $formaPagamento]);
         return new Response($html);
     }
 
@@ -95,10 +95,26 @@ class FormaPagamentoController {
 
     public function update(Request $request): Response
     {
-        $id = (int)$request->query->get('id', 0);
-        $formaPagamento = $this->repo->find($id);
-        if (!$formaPagamento) return new Response('Forma de pagamento não encontrada', 404);
-        $html = $this->view->render('admin/FormaPagamento/update', ['formaPagamento' => $formaPagamento]);
-        return new Response($html);
+        if (!Csrf::validate($request->request->get('_csrf'))) return new Response('Token CSRF inválido', 419);
+        $data = [
+            'descricao' => trim($request->request->get('descricao')),
+            'tipo_pagamento' => trim($request->request->get('tipo_pagamento')),
+        ];
+        $id = (int)$request->request->get('id', 0);
+        
+        $errors = $this->service->validate($data);
+        if ($errors) {
+            $formaPagamento = $this->repo->find($id);
+            if (!$formaPagamento) return new Response('Forma de pagamento não encontrada', 404);
+            $html = $this->view->render('admin/formaPagamento/edit', [
+                'formaPagamento' => array_merge($formaPagamento, $data),
+                'csrf' => Csrf::token(),
+                'errors' => $errors
+            ]);
+            return new Response($html, 422);
+        }
+        
+        $this->repo->update($id, $data);
+        return new RedirectResponse('/admin/formaPagamento/show?id=' . $id);
     }
 }

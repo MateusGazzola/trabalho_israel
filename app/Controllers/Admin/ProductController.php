@@ -59,6 +59,10 @@ class ProductController {
         $id = (int)$request->query->get('id', 0);
         $product = $this->repo->find($id);
         if (!$product) return new Response('Produto não encontrado', 404);
+        
+        $categories = $this->categoryRepo->getArray();
+        $product['category_name'] = $categories[$product['category_id']] ?? 'N/A';
+        
         $html = $this->view->render('admin/products/show', ['product' => $product]);
         return new Response($html);
     }

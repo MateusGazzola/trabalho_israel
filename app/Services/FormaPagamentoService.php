@@ -15,7 +15,8 @@ class FormaPagamentoService {
 
     public function make(array $data): FormaPagamento {
         $descricao = trim($data['descricao'] ?? '');
+        $tipo_pagamento = trim($data['tipo_pagamento'] ?? '');
         $id = isset($data['id']) ? (int)$data['id'] : null;
-        return new FormaPagamento($id, $descricao);
+        return new FormaPagamento($id, $descricao, $tipo_pagamento);
     }
 }

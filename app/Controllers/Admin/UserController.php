@@ -2,11 +2,10 @@
 namespace App\Controllers\Admin;
 
 use App\Core\Csrf;
+use App\Core\Flash;
 use App\Core\View;
-use App\Repositories\ProductRepository;
 use App\Repositories\UserRepository;
 use App\Services\AuthService;
-use App\Services\ProductService;
 use App\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,7 +42,7 @@ class UserController {
             return new Response('Token CSRF inválido', 419);
         $errors = $this->service->validate($request->request->all());
 
-        $emailExists = $this->repo->findByEmail($request->get('email'));
+        $emailExists = $this->repo->findByEmail($request->request->get('email'));
         if($emailExists){
             $errors['email'] = "E-mail já utilizado.";
         }
@@ -54,7 +53,7 @@ class UserController {
         }
 
         $user = $this->service->make($request->request->all());
-        $user->password_hash = AuthService::hashPassword($user->password_hash);
+        $user->password_hash = AuthService::hashPassword($request->request->get('password'));
         $id = $this->repo->create($user);
 
         return new RedirectResponse('/admin/users/show?id=' . $id);
@@ -70,37 +69,59 @@ class UserController {
 
     public function edit(Request $request): Response {
         $id = (int)$request->query->get('id', 0);
-        $product = $this->repo->find($id);
-        if (!$product) return new Response('Usuário não encontrado', 404);
-        $html = $this->view->render('admin/users/edit', ['product' => $product, 'csrf' => Csrf::token(), 'errors' => []]);
+        $user = $this->repo->find($id);
+        if (!$user) return new Response('Usuário não encontrado', 404);
+        $html = $this->view->render('admin/users/edit', ['user' => $user, 'csrf' => Csrf::token(), 'errors' => []]);
         return new Response($html);
     }
 
     public function update(Request $request): Response {
         if (!Csrf::validate($request->request->get('_csrf'))) return new Response('Token CSRF inválido', 419);
         $data = $request->request->all();
-        $errors = $this->service->validate($data);
+        
+        // Validação sem senha para update (senha é opcional)
+        $errors = [];
+        $name = trim($data['name'] ?? '');
+        $email = trim($data['email'] ?? '');
+        if ($name === '') $errors['name'] = 'Nome é obrigatório';
+        if ($email === '') {
+            $errors['email'] = 'E-mail é obrigatório';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'E-mail inválido';
+        }
 
-        $emailExists = $this->repo->findByEmailNotId($request->get('email'), $data['id']);
+        $emailExists = $this->repo->findByEmailNotId($request->request->get('email'), $data['id']);
         if($emailExists){
             $errors['email'] = "E-mail já utilizado.";
         }
 
         if ($errors) {
-            $html = $this->view->render('admin/users/edit', ['product' => array_merge($this->repo->find((int)$data['id']), $data), 'csrf' => Csrf::token(), 'errors' => $errors]);
+            $html = $this->view->render('admin/users/edit', ['user' => array_merge($this->repo->find((int)$data['id']), $data), 'csrf' => Csrf::token(), 'errors' => $errors]);
             return new Response($html, 422);
         }
 
-        $product = $this->service->make($data);
-        if (!$product->id) return new Response('ID inválido', 422);
-        $this->repo->update($product);
-        return new RedirectResponse('/admin/users/show?id=' . $product->id);
+        $user = $this->service->make($data);
+        if (!$user->id) return new Response('ID inválido', 422);
+        
+        // Se senha foi fornecida, fazer hash. Caso contrário, manter a atual
+        $password = trim($data['password'] ?? '');
+        if ($password !== '') {
+            $user->password_hash = AuthService::hashPassword($password);
+        } else {
+            // Manter a senha atual do banco
+            $currentUser = $this->repo->find($user->id);
+            $user->password_hash = $currentUser['password_hash'] ?? null;
+        }
+        
+        $this->repo->update($user);
+        return new RedirectResponse('/admin/users/show?id=' . $user->id);
     }
 
     public function delete(Request $request): Response {
         $total = $this->repo->countAll();
         if($total === 1){
-            return new Response('Token CSRF inválido', 419);
+            Flash::push('danger', 'Não é possível excluir o último usuário');
+            return new RedirectResponse('/admin/users');
         }
         if (!Csrf::validate($request->request->get('_csrf'))) return new Response('Token CSRF inválido', 419);
         $id = (int)$request->request->get('id', 0);

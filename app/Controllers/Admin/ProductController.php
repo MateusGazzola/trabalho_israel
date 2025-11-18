@@ -2,8 +2,10 @@
 namespace App\Controllers\Admin;
 
 use App\Core\Csrf;
+use App\Core\Flash;
 use App\Core\View;
 use App\Repositories\CategoryRepository;
+use App\Repositories\PedidoRepository;
 use App\Repositories\ProductRepository;
 use App\Services\ProductService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -15,12 +17,14 @@ class ProductController {
     private ProductRepository $repo;
     private ProductService $service;
     private CategoryRepository $categoryRepo;
+    private PedidoRepository $pedidoRepo;
 
     public function __construct() {
         $this->view = new View();
         $this->repo = new ProductRepository();
         $this->service = new ProductService();
         $this->categoryRepo = new CategoryRepository();
+        $this->pedidoRepo = new PedidoRepository();
     }
 
     public function index(Request $request): Response {
@@ -96,6 +100,13 @@ class ProductController {
     public function delete(Request $request): Response {
         if (!Csrf::validate($request->request->get('_csrf'))) return new Response('Token CSRF inválido', 419);
         $id = (int)$request->request->get('id', 0);
+        
+        $pedidos = $this->pedidoRepo->findByProductId($id);
+        if (count($pedidos) > 0) {
+            Flash::push("danger", "Produto não pode ser excluído pois está sendo utilizado em pedidos");
+            return new RedirectResponse('/admin/products');
+        }
+
         if ($id > 0) $this->repo->delete($id);
         return new RedirectResponse('/admin/products');
     }

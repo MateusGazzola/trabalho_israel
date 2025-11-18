@@ -6,6 +6,7 @@ use App\Core\Csrf;
 use App\Core\Flash;
 use App\Core\View;
 use App\Repositories\ClienteRepository;
+use App\Repositories\PedidoRepository;
 use App\Services\ClienteService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,12 +17,14 @@ class ClienteController
     private View $view;
     private ClienteRepository $repo;
     private ClienteService $service;
+    private PedidoRepository $pedidoRepo;
 
     public function __construct()
     {
         $this->view = new View();
         $this->repo = new ClienteRepository();
         $this->service = new ClienteService();
+        $this->pedidoRepo = new PedidoRepository();
     }
 
     public function index(Request $request): Response
@@ -142,6 +145,13 @@ class ClienteController
         }
 
         $id = (int)$request->request->get('id', 0);
+        
+        $pedidos = $this->pedidoRepo->findByClienteId($id);
+        if (count($pedidos) > 0) {
+            Flash::push("danger", "Cliente não pode ser excluído pois está sendo utilizado em pedidos");
+            return new RedirectResponse('/admin/clientes');
+        }
+
         if ($id > 0) {
             $this->repo->delete($id);
             Flash::push('success', 'Cliente excluído com sucesso!');

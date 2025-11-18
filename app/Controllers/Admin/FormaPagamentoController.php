@@ -6,6 +6,7 @@ use App\Core\Csrf;
 use App\Core\Flash;
 use App\Core\View;
 use App\Repositories\FormaPagamentoRepository;
+use App\Repositories\PedidoRepository;
 use App\Services\FormaPagamentoService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,12 +19,14 @@ class FormaPagamentoController {
     private View $view;
     private FormaPagamentoRepository $repo;
     private FormaPagamentoService $service;
+    private PedidoRepository $pedidoRepo;
 
     public function __construct()
     {
         $this->view = new View();
         $this->repo = new FormaPagamentoRepository();
         $this->service = new FormaPagamentoService();
+        $this->pedidoRepo = new PedidoRepository();
     }
 
     public function index(Request $request): Response
@@ -80,6 +83,13 @@ class FormaPagamentoController {
     public function delete(Request $request): Response {
         if (!Csrf::validate($request->request->get('_csrf'))) return new Response('Token CSRF inválido', 419);
         $id = (int)$request->request->get('id', 0);
+        
+        $pedidos = $this->pedidoRepo->findByFormaPagamentoId($id);
+        if (count($pedidos) > 0) {
+            Flash::push("danger", "Forma de pagamento não pode ser excluída pois está sendo utilizada em pedidos");
+            return new RedirectResponse('/admin/formaPagamento');
+        }
+
         if ($id > 0) $this->repo->delete($id);
         return new RedirectResponse('/admin/formaPagamento');
     }

@@ -107,5 +107,26 @@ class PedidoRepository
         $stmt = $this->db->prepare("DELETE FROM pedidos WHERE id = :id");
         $stmt->execute(['id' => $id]);
     }
+
+    public function findByFormaPagamentoId(int $id): array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM pedidos WHERE forma_pagamento_id = :id");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function findByClienteId(int $id): array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM pedidos WHERE cliente_id = :id");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function findByProductId(int $id): array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM pedidos WHERE product_id = :id");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 

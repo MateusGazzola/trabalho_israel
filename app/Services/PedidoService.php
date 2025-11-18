@@ -38,7 +38,6 @@ class PedidoService
             $errors['quantidade'] = 'Quantidade deve ser maior que zero';
         }
 
-        // Verificar se o cliente existe
         if ($cliente_id && is_numeric($cliente_id)) {
             $cliente = $this->clienteRepo->find((int)$cliente_id);
             if (!$cliente) {
@@ -46,7 +45,6 @@ class PedidoService
             }
         }
 
-        // Verificar se o produto existe
         if ($product_id && is_numeric($product_id)) {
             $product = $this->productRepo->find((int)$product_id);
             if (!$product) {
@@ -66,7 +64,6 @@ class PedidoService
         $status = trim($data['status'] ?? 'pendente');
         $id = isset($data['id']) ? (int)$data['id'] : null;
 
-        // Calcular valor total
         $valor_total = 0.0;
         if ($product_id > 0) {
             $product = $this->productRepo->find($product_id);

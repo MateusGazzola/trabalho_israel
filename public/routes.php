@@ -14,12 +14,10 @@ use App\Middleware\AuthMiddleware;
 use Symfony\Component\HttpFoundation\Request;
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $routeCollector) {
-    // Index Site
     $routeCollector->addGroup('/', function (FastRoute\RouteCollector $site) {
         $site->addRoute('GET', '', [SiteController::class, 'index']);
     });
 
-    // Autenticação
     $routeCollector->addGroup('/auth', function (FastRoute\RouteCollector $auth) {
         $auth->addRoute('GET', '/login', [AuthController::class, 'showLogin']);
         $auth->addRoute('GET', '/create', [AuthController::class, 'create']);
@@ -28,12 +26,10 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $rou
     });
 
     $routeCollector->addGroup('/admin', function (FastRoute\RouteCollector $group) {
-        // Home Admin
         $group->addGroup('', function (FastRoute\RouteCollector $admin) {
             $admin->addRoute('GET', '', [AdminController::class, 'index']);
         });
 
-        // Produtos
         $group->addGroup('/products', function (FastRoute\RouteCollector $products) {
             $products->addRoute('GET', '', [ProductController::class, 'index']);
             $products->addRoute('GET', '/create', [ProductController::class, 'create']);
@@ -44,7 +40,6 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $rou
             $products->addRoute('POST', '/delete', [ProductController::class, 'delete']);
         });
 
-        // Categorias
         $group->addGroup('/categories', function (FastRoute\RouteCollector $categories) {
             $categories->addRoute('GET', '', [CategoryController::class, 'index']);
             $categories->addRoute('GET', '/create', [CategoryController::class, 'create']);
@@ -55,18 +50,14 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $rou
             $categories->addRoute('POST', '/delete', [CategoryController::class, 'delete']);
         });
 
-        // Usuários
         $group->addGroup('/users', function (FastRoute\RouteCollector $users) {
             $users->addRoute('GET', '', [UserController::class, 'index']);
             $users->addRoute('GET', '/create', [UserController::class, 'create']);
             $users->addRoute('POST', '/store', [UserController::class, 'store']);
             $users->addRoute('GET', '/show', [UserController::class, 'show']);
-//            $users->addRoute('GET', '/edit', [UserController::class, 'edit']);
-//            $users->addRoute('POST', '/update', [UserController::class, 'update']);
             $users->addRoute('POST', '/delete', [UserController::class, 'delete']);
         });
 
-        //Forma de Pagamento
         $group->addGroup('/formaPagamento', function (FastRoute\RouteCollector $formaPagamento) {
             $formaPagamento->addRoute('GET', '', [FormaPagamentoController::class, 'index']);
             $formaPagamento->addRoute('GET', '/create', [FormaPagamentoController::class, 'create']);
@@ -77,7 +68,6 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $rou
             $formaPagamento->addRoute('GET', '/edit', [FormaPagamentoController::class, 'edit']);
         });
 
-        // Clientes
         $group->addGroup('/clientes', function (FastRoute\RouteCollector $clientes) {
             $clientes->addRoute('GET', '', [ClienteController::class, 'index']);
             $clientes->addRoute('GET', '/create', [ClienteController::class, 'create']);
@@ -88,7 +78,6 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $rou
             $clientes->addRoute('POST', '/delete', [ClienteController::class, 'delete']);
         });
 
-        // Pedidos
         $group->addGroup('/pedidos', function (FastRoute\RouteCollector $pedidos) {
             $pedidos->addRoute('GET', '', [PedidoController::class, 'index']);
             $pedidos->addRoute('GET', '/create', [PedidoController::class, 'create']);
@@ -123,12 +112,10 @@ switch ($routeInfo[0]) {
         [$class, $method] = $routeInfo[1];
         $controller = new $class();
 
-        // Módulos protegidos
         $protectedRoutes = [
             '/admin',
         ];
 
-        // Se a rota começar com alguma dessas, exige login
         foreach ($protectedRoutes as $prefix) {
             if (str_starts_with($uri, $prefix)) {
                 $redirect = AuthMiddleware::requireLogin();

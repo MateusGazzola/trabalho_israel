@@ -79,7 +79,6 @@ class UserController {
         if (!Csrf::validate($request->request->get('_csrf'))) return new Response('Token CSRF inválido', 419);
         $data = $request->request->all();
         
-        // Validação sem senha para update (senha é opcional)
         $errors = [];
         $name = trim($data['name'] ?? '');
         $email = trim($data['email'] ?? '');
@@ -103,12 +102,10 @@ class UserController {
         $user = $this->service->make($data);
         if (!$user->id) return new Response('ID inválido', 422);
         
-        // Se senha foi fornecida, fazer hash. Caso contrário, manter a atual
         $password = trim($data['password'] ?? '');
         if ($password !== '') {
             $user->password_hash = AuthService::hashPassword($password);
         } else {
-            // Manter a senha atual do banco
             $currentUser = $this->repo->find($user->id);
             $user->password_hash = $currentUser['password_hash'] ?? null;
         }

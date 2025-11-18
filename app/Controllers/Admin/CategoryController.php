@@ -94,7 +94,6 @@ class CategoryController
 
     public function delete(Request $request): Response
     {
-        // Pegar produto com categoria
         $categories = $this->productRepo->findByCategoryId((int)$request->request->get('id', 0));
         if (count($categories) > 0) {
             Flash::push("danger", "Categoria não pode ser excluída");

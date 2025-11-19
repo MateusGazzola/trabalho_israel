@@ -39,9 +39,7 @@
                                     <a class="btn btn-sm btn-secondary" href="/admin/formaPagamento/show?id=<?= $this->e($formaPagamento['id']) ?>">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a class="btn btn-sm btn-primary" href="/admin/formaPagamento/edit?id=<?= $this->e($formaPagamento['id']) ?>">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
+                                    
                                     <form class="d-inline" action="/admin/formaPagamento/delete" method="post"
                                           onsubmit="return confirm('Tem certeza que deseja excluir a forma de pagamento <?= $this->e($formaPagamento['descricao']) ?>?');">
                                         <input type="hidden" name="id" value="<?= $this->e($formaPagamento['id']) ?>">

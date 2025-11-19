@@ -3,7 +3,6 @@
 <?php $this->start('body') ?>
 
 <div class="row g-4 mb-4">
-    <!-- Card de Estatísticas -->
     <div class="col-md-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body">
